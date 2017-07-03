@@ -306,10 +306,16 @@ contract('CrowdsaleMinter', function(accounts) {
                 sanWhiteList.address,
                 presale.address,
                 presalerVoting.address
-           )).then(()=>crowdsaleMinter.state())
-              .then(state => {
-                  assert.equal("BEFORE_START",state,"state mismatched: ");
-              });
+           )).then(()=>Promise.all([
+                crowdsaleMinter.state(),
+                crowdsaleMinter.san_whitelist(accounts[3]),
+                crowdsaleMinter.cfi_whitelist(accounts[1]),
+               ]).spread((state,san,cfi) => {
+                      assert.equal("BEFORE_START",state,"state mismatched: ");
+                      assert.deepEqual([100000,1100000],san.map(e=>e.toNumber()),"san wl mismatched: ");
+                      assert.equal(true,cfi,"cfi mismatched: ");
+                  })
+           );
     });
 
 

@@ -157,6 +157,10 @@ contract CrowdsaleMinter is Owned {
     function state() constant external returns (string) { return stateNames[ uint(currentState()) ]; }
 
     uint public round_remainder;
+
+    function san_whitelist(address addr) public constant returns(uint, uint) { return COMMUNITY_ALLOWANCE_LIST.allowed(addr); }
+    function cfi_whitelist(address addr) public constant returns(bool) { return PRIORITY_ADDRESS_LIST.contains(addr); }
+
     /* ====== public states END ====== */
 
     string[] private stateNames = ["BEFORE_START", "COMMUNITY_SALE", "PRIORITY_SALE", "PRIORITY_SALE_FINISHED", "PUBLIC_SALE", "BONUS_MINTING", "WITHDRAWAL_RUNNING", "REFUND_RUNNING", "CLOSED" ];
