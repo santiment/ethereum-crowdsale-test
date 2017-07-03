@@ -30,7 +30,7 @@ contract AddressList {
 }
 
 contract MinMaxWhiteList {
-    function allowed(address addr) public returns (uint24 /*finney*/, uint24 /*finney*/ );
+    function allowed(address addr) public returns (uint /*finney*/, uint /*finney*/ );
 }
 
 contract PresaleBonusVoting {
@@ -72,6 +72,9 @@ contract CrowdsaleMinter is Owned {
     function CrowdsaleMinter() { }
 
     function configure(
+        uint    _MIN_TOTAL_AMOUNT_TO_RECEIVE,
+        uint    _COMMUNITY_PLUS_PRIORITY_SALE_CAP,
+        uint    _MAX_TOTAL_AMOUNT_TO_RECEIVE,
         uint    _COMMUNITY_SALE_START,
         uint    _PRIORITY_SALE_START,
         uint    _PUBLIC_SALE_START,
@@ -85,6 +88,9 @@ contract CrowdsaleMinter is Owned {
         address _PRESALE_BALANCES,
         address _PRESALE_BONUS_VOTING
     ) external {
+        MIN_TOTAL_AMOUNT_TO_RECEIVE      = _MIN_TOTAL_AMOUNT_TO_RECEIVE;
+        COMMUNITY_PLUS_PRIORITY_SALE_CAP = _COMMUNITY_PLUS_PRIORITY_SALE_CAP;
+        MAX_TOTAL_AMOUNT_TO_RECEIVE      = _MAX_TOTAL_AMOUNT_TO_RECEIVE;
         COMMUNITY_SALE_START        = _COMMUNITY_SALE_START;
         PRIORITY_SALE_START         = _PRIORITY_SALE_START;
         PUBLIC_SALE_START           = _PUBLIC_SALE_START;
@@ -150,14 +156,15 @@ contract CrowdsaleMinter is Owned {
     //displays current contract state in human readable form
     function state() constant external returns (string) { return stateNames[ uint(currentState()) ]; }
 
+    uint public round_remainder;
     /* ====== public states END ====== */
 
     string[] private stateNames = ["BEFORE_START", "COMMUNITY_SALE", "PRIORITY_SALE", "PRIORITY_SALE_FINISHED", "PUBLIC_SALE", "BONUS_MINTING", "WITHDRAWAL_RUNNING", "REFUND_RUNNING", "CLOSED" ];
     enum State { BEFORE_START, COMMUNITY_SALE, PRIORITY_SALE, PRIORITY_SALE_FINISHED, PUBLIC_SALE, BONUS_MINTING, WITHDRAWAL_RUNNING, REFUND_RUNNING, CLOSED }
 
-    uint private constant COMMUNITY_PLUS_PRIORITY_SALE_CAP = COMMUNITY_PLUS_PRIORITY_SALE_CAP_ETH * 1 ether;
-    uint private constant MIN_TOTAL_AMOUNT_TO_RECEIVE = MIN_TOTAL_AMOUNT_TO_RECEIVE_ETH * 1 ether;
-    uint private constant MAX_TOTAL_AMOUNT_TO_RECEIVE = MAX_TOTAL_AMOUNT_TO_RECEIVE_ETH * 1 ether;
+    uint private /* constant */ COMMUNITY_PLUS_PRIORITY_SALE_CAP = COMMUNITY_PLUS_PRIORITY_SALE_CAP_ETH * 1 ether;
+    uint private /* constant */ MIN_TOTAL_AMOUNT_TO_RECEIVE = MIN_TOTAL_AMOUNT_TO_RECEIVE_ETH * 1 ether;
+    uint private /* constant */ MAX_TOTAL_AMOUNT_TO_RECEIVE = MAX_TOTAL_AMOUNT_TO_RECEIVE_ETH * 1 ether;
     uint private constant MIN_ACCEPTED_AMOUNT = MIN_ACCEPTED_AMOUNT_FINNEY * 1 finney;
     bool private allBonusesAreMinted = false;
 
@@ -238,9 +245,10 @@ contract CrowdsaleMinter is Owned {
         uint extra_team_amount = extra_amount * TEAM_BONUS_PER_CENT / TEAM_AND_PARTNERS_PER_CENT;
         uint extra_partners_amount = extra_amount * ADVISORS_AND_PARTNERS_PER_CENT / TEAM_AND_PARTNERS_PER_CENT;
 
+
         //beautify total supply: round down to full eth.
         uint total_to_mint = total_collected_amount + extra_amount;
-        uint round_remainder = total_to_mint - (total_to_mint / 1 ether * 1 ether);
+        round_remainder = total_to_mint - (total_to_mint / 1 ether * 1 ether);
         extra_team_amount -= round_remainder; //this will reduce total_supply to rounded value
 
         //mint group bonuses
