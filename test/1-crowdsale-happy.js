@@ -13,19 +13,19 @@ const TOKEN_PER_ETH = 1000;
 
 contract('CrowdsaleMinter', function(accounts) {
     let presale, presalerVoting, cfiWhiteList, sanWhiteList, crowdsaleMinter, mintableToken;
-    let COMMUNITY_SALE_START, PRIORITY_SALE_START, PUBLIC_SALE_START, PUBLIC_SALE_END, WITHDRAWAL_END;
+    let OWNER, COMMUNITY_SALE_START, PRIORITY_SALE_START, PUBLIC_SALE_START, PUBLIC_SALE_END, WITHDRAWAL_END;
     let TEAM_GROUP_WALLET, ADVISERS_AND_FRIENDS_WALLET;
     let MIN_TOTAL_AMOUNT_TO_RECEIVE, COMMUNITY_PLUS_PRIORITY_SALE_CAP_ETH, MAX_TOTAL_AMOUNT_TO_RECEIVE;
 
     it("should be in BEFORE_START state", function () {
-        console.log('now> ',web3.eth.blockNumber, COMMUNITY_SALE_START);
+        //console.log('now> ',web3.eth.blockNumber, COMMUNITY_SALE_START);
         assert.isBelow(web3.eth.blockNumber, COMMUNITY_SALE_START, "expected: blockNr <= COMMUNITY_SALE_START");
         return crowdsaleMinter.state()
         .then(state => assert.equal('BEFORE_START',state,'state mismatch'));
     });
 
     it("should fail to donate in BEFORE_START", function (done) {
-        console.log('next> ',web3.eth.blockNumber+1, COMMUNITY_SALE_START);
+        //console.log('next> ',web3.eth.blockNumber+1, COMMUNITY_SALE_START);
         assert.isBelow(web3.eth.blockNumber+1, COMMUNITY_SALE_START, "expected: blockNr <= COMMUNITY_SALE_START"); //next block
         crowdsaleMinter.state()
         .then(state => {
@@ -38,7 +38,7 @@ contract('CrowdsaleMinter', function(accounts) {
     it("should be in COMMUNITY_SALE state", function () {
         return evm_mine()
         .then(tx => {
-            console.log('now> ',web3.eth.blockNumber, COMMUNITY_SALE_START);
+            //console.log('now> ',web3.eth.blockNumber, COMMUNITY_SALE_START);
             assert.isAtLeast(web3.eth.blockNumber, COMMUNITY_SALE_START,"expected: blockNr >= COMMUNITY_SALE_START");
             assert.isBelow(web3.eth.blockNumber, PRIORITY_SALE_START,"expected: blockNr < PRIORITY_SALE_START");
             return crowdsaleMinter.state()
@@ -47,7 +47,7 @@ contract('CrowdsaleMinter', function(accounts) {
     });
 
     it("should donate in COMMUNITY_SALE", function () {
-        console.log(web3.eth.blockNumber, COMMUNITY_SALE_START);
+        //console.log(web3.eth.blockNumber, COMMUNITY_SALE_START);
         assert.isAtLeast(web3.eth.blockNumber, COMMUNITY_SALE_START,"expected: blockNr >= COMMUNITY_SALE_START");
         assert.isBelow(web3.eth.blockNumber, PRIORITY_SALE_START,"expected: blockNr < PRIORITY_SALE_START");
         return crowdsaleMinter.state()
@@ -71,7 +71,7 @@ contract('CrowdsaleMinter', function(accounts) {
     it("should be in PRIORITY_SALE state", function () {
         return evm_mine()
         .then(tx => {
-            console.log(web3.eth.blockNumber, PRIORITY_SALE_START);
+            //console.log(web3.eth.blockNumber, PRIORITY_SALE_START);
             assert.isAtLeast(web3.eth.blockNumber, PRIORITY_SALE_START,"blocknr mitmatch");
             assert.isBelow(web3.eth.blockNumber, PUBLIC_SALE_START,"expected: blockNr < PUBLIC_SALE_START");
             return crowdsaleMinter.state()
@@ -80,7 +80,7 @@ contract('CrowdsaleMinter', function(accounts) {
     });
 
     it("should donate in PRIORITY_SALE state", function () {
-        console.log('next>',web3.eth.blockNumber+1, PRIORITY_SALE_START);
+        //console.log('next>',web3.eth.blockNumber+1, PRIORITY_SALE_START);
         assert.isAtLeast(web3.eth.blockNumber, PRIORITY_SALE_START,"expected: blockNr: >= PRIORITY_SALE_START");
         assert.isBelow(web3.eth.blockNumber, PUBLIC_SALE_START,"expected: blockNr: < PUBLIC_SALE_START");
         return crowdsaleMinter.state()
@@ -104,7 +104,7 @@ contract('CrowdsaleMinter', function(accounts) {
     it("should be in PUBLIC_SALE state", function () {
         return evm_mine()
         .then(tx => {
-            console.log(web3.eth.blockNumber, PUBLIC_SALE_START);
+            //console.log(web3.eth.blockNumber, PUBLIC_SALE_START);
             assert.isAtMost(web3.eth.blockNumber, PUBLIC_SALE_START,"expected: blockNr >= PUBLIC_SALE_START");
             return crowdsaleMinter.state()
               .then(state => assert.equal('PUBLIC_SALE',state,'state mismatch'));
@@ -112,7 +112,7 @@ contract('CrowdsaleMinter', function(accounts) {
     });
 
     it("should donate in PUBLIC_SALE state", function () {
-        console.log('next>',web3.eth.blockNumber+1, PUBLIC_SALE_START);
+        //console.log('next>',web3.eth.blockNumber+1, PUBLIC_SALE_START);
         assert.isAtLeast(web3.eth.blockNumber+1, PUBLIC_SALE_START,"expected: blockNr >= PUBLIC_SALE_START");
         assert.isAtMost(web3.eth.blockNumber+1, PUBLIC_SALE_END,"expected: blockNr < PUBLIC_SALE_END");
         return crowdsaleMinter.state()
@@ -136,7 +136,7 @@ contract('CrowdsaleMinter', function(accounts) {
     it("should be in BONUS_MINTING state", function () {
         return evm_mine()
         .then(tx => {
-            console.log(web3.eth.blockNumber, PUBLIC_SALE_END);
+            //console.log(web3.eth.blockNumber, PUBLIC_SALE_END);
             assert.isAbove(web3.eth.blockNumber, PUBLIC_SALE_END,"expected: blockNr > PUBLIC_SALE_END");
             assert.isBelow(web3.eth.blockNumber, WITHDRAWAL_END,"expected: blockNr < WITHDRAWAL_END");
             return Promise.all([
@@ -150,7 +150,7 @@ contract('CrowdsaleMinter', function(accounts) {
     });
 
     it("should fail to donate after PUBLIC_SALE_END", function (done) {
-        console.log('next> ',web3.eth.blockNumber+1, PUBLIC_SALE_END);
+        //console.log('next> ',web3.eth.blockNumber+1, PUBLIC_SALE_END);
         assert.isAbove(web3.eth.blockNumber, PUBLIC_SALE_END,"expected: blockNr > PUBLIC_SALE_END");
         assert.isBelow(web3.eth.blockNumber, WITHDRAWAL_END,"expected: blockNr < WITHDRAWAL_END");
         crowdsaleMinter.state()
@@ -162,7 +162,7 @@ contract('CrowdsaleMinter', function(accounts) {
     });
 
     it("should mint all Bonuses in BONUS_MINTING state", function () {
-        console.log(web3.eth.blockNumber, PUBLIC_SALE_END);
+        //console.log(web3.eth.blockNumber, PUBLIC_SALE_END);
         assert.isAbove(web3.eth.blockNumber, PUBLIC_SALE_END,"expected: blockNr > PUBLIC_SALE_END");
         assert.isBelow(web3.eth.blockNumber, WITHDRAWAL_END,"expected: blockNr < WITHDRAWAL_END");
         return crowdsaleMinter.state()
@@ -171,23 +171,22 @@ contract('CrowdsaleMinter', function(accounts) {
             return crowdsaleMinter.mintAllBonuses();
         }).then(tx => {
             let gasUsed = tx.receipt.gasUsed;
-            console.log('mintAllBonuses.gasUsed> ', gasUsed);
+            //console.log('mintAllBonuses.gasUsed> ', gasUsed);
             return Promise.all([
                 crowdsaleMinter.round_remainder(),
                 mintableToken.balanceOf(TEAM_GROUP_WALLET),
                 mintableToken.balanceOf(ADVISERS_AND_FRIENDS_WALLET),
-                mintableToken.totalSupply()
-            ]).spread((bn_round_remainder, bn_team, bn_friends, bn_totalSupply) => {
+                mintableToken.totalSupply(),
+                crowdsaleMinter.total_presale_amount_with_bonus(),
+                crowdsaleMinter.total_received_amount()
+            ]).spread((bn_round_remainder, bn_team, bn_friends, bn_totalSupply, bn_total_presale_amount_with_bonus, bn_total_received_amount) => {
                   let round_remainder = toFinney(bn_round_remainder);
+                  let total_received_amount = toFinney(bn_total_received_amount);
+                  let total_presale_amount_with_bonus = toFinney(bn_total_presale_amount_with_bonus);
                   let team = toSAN(bn_team);
                   let friends = toSAN(bn_friends);
                   let totalSupply = toSAN(bn_totalSupply);
-                  console.log('remainder>',round_remainder);
-                  console.log('team>',team);
-                  console.log('friends>',friends);
-                  console.log('total>',totalSupply);
-                  console.log('team/total>',team*100/totalSupply);
-                  console.log('friends/total>',friends*100/totalSupply);
+                  assert.equal(expected_total_presale_amount_with_bonus,total_presale_amount_with_bonus,"total_presale_amount_with_bonus mitmatched");
                   assert.isBelow(18-team*100/totalSupply, 0.1, 'APPROX team/totalSupply ratio mismatched');
                   assert.isBelow(10-friends*100/totalSupply, 0.1, 'APPROX friends/totalSupply ratio mismatched');
                   assert.isBelow(18-(team+round_remainder)*100/(totalSupply+round_remainder), 0.000001, 'EXACT team/totalSupply ratio mismatched');
@@ -196,18 +195,70 @@ contract('CrowdsaleMinter', function(accounts) {
         });
     });
 
+
+    it("should be in WITHDRAWAL state", function () {
+          //console.log(web3.eth.blockNumber, PUBLIC_SALE_END);
+          assert.isAbove(web3.eth.blockNumber, PUBLIC_SALE_END,"expected: blockNr > PUBLIC_SALE_END");
+          assert.isBelow(web3.eth.blockNumber, WITHDRAWAL_END,"expected: blockNr < WITHDRAWAL_END");
+          return Promise.all([
+              crowdsaleMinter.state(),
+              crowdsaleMinter.allBonusesAreMinted()
+          ]).spread((state, allBonusesAreMinted) => {
+                assert.ok(allBonusesAreMinted,'allBonusesAreMinted==true expected ');
+                assert.equal('WITHDRAWAL_RUNNING',state,'state mismatch');
+          });
+    });
+
+    it("should withdraw in WITHDRAWAL_RUNNING state", function () {
+        //console.log(web3.eth.blockNumber, PUBLIC_SALE_END);
+        assert.isAbove(web3.eth.blockNumber, PUBLIC_SALE_END,"expected: blockNr > PUBLIC_SALE_END");
+        assert.isBelow(web3.eth.blockNumber, WITHDRAWAL_END,"expected: blockNr < WITHDRAWAL_END");
+        let bn_owner_balance_before;
+        return Promise.all([
+            crowdsaleMinter.state(),
+            web3.eth.getBalance(OWNER),
+            mintableToken.isStarted()
+        ]).spread((state, _bn_owner_balance_before, isStarted) => {
+            bn_owner_balance_before = _bn_owner_balance_before;
+            assert.equal('WITHDRAWAL_RUNNING',state,'state mismatch');
+            assert.equal(false,isStarted,'ERR token already started: ');
+            return crowdsaleMinter.withdrawFundsAndStartToken();
+        }).then(tx => Promise.all([
+                    web3.eth.getBalance(OWNER),
+                    web3.eth.getBalance(crowdsaleMinter.address),
+                    crowdsaleMinter.total_received_amount(),
+                    mintableToken.isStarted(),
+                ]).spread( (bn_owner_balance_after, bn_minter_balance, bn_total_received_amount, isStarted) => {
+                    assert.isBelow(2020 - toEther(bn_owner_balance_after.minus(bn_owner_balance_before)),0.011,'ERR bn_owner_balance: ');
+                    assert.equal(0,toEther(bn_minter_balance),'ERR bn_minter_balance expected 0: ');
+                    assert.equal(2020,toEther(bn_total_received_amount),'ERR total_received_amount: ');
+                    assert.equal(true,isStarted,'ERR token is not started: ');
+                })
+          );
+    });
+
+    it("should be in CLOSED state", function () {
+          return crowdsaleMinter.state()
+          .then(state => {
+                assert.equal('CLOSED',state,'state mismatch');
+          });
+    });
+
     //========== SETUP ==============
 
     before("should setup infrastructuring contract", function() {
+        OWNER = accounts[0];
         const PRESALE_AMOUNTS = new Array(PRESALE_ADDRESSES.length);
-        PRESALE_AMOUNTS.fill(10000);
+        PRESALE_AMOUNTS.fill(10000); //set 10 ethers donation for all presaler
+        const VOTING_ADDRESSES = PRESALE_ADDRESSES.slice(0,4);
+        const PRESALE_VOTES = [9,500, 500, 1000];
+        expected_total_presale_amount_with_bonus = calculatePresaleBonus(PRESALE_ADDRESSES,PRESALE_AMOUNTS, VOTING_ADDRESSES, PRESALE_VOTES);
+        //console.log('expected_total_presale_amount_with_bonus>', expected_total_presale_amount_with_bonus);
         return Promise.all([
             Presale.deployed()
-            .then(instance => (presale=instance).addBalances(PRESALE_ADDRESSES, PRESALE_AMOUNTS)),
+            .then(instance => (presale=instance).addBalances(PRESALE_ADDRESSES, PRESALE_AMOUNTS, VOTING_ADDRESSES, PRESALE_VOTES)),
             PresalerVoting.deployed()
-            .then(instance => (presalerVoting=instance).addRawVotes(
-                [accounts[1], accounts[2], accounts[3]],
-                [9,5000,1000])),
+            .then(instance => (presalerVoting=instance).addRawVotes(VOTING_ADDRESSES, PRESALE_VOTES)),
             SANWhiteList.deployed()
             .then(instance => (sanWhiteList=instance).addPack(
                 [accounts[3], accounts[4], accounts[5], accounts[6]],
@@ -230,13 +281,13 @@ contract('CrowdsaleMinter', function(accounts) {
                 sanWhiteList.allowed(accounts[3])
             ]).spread( (n1,n2,n3,n4,b5,a6)=>{
                 assert.equal(38,n1.toNumber(),"mismatched presale.counter()");
-                assert.equal(3,n2.toNumber(),"mismatched presalerVoting.votersLen()");
+                assert.equal(4,n2.toNumber(),"mismatched presalerVoting.votersLen()");
                 assert.equal(3,n3.toNumber(),"mismatched cfiWhiteList.recordNr()");
                 assert.equal(4,n4.toNumber(),"mismatched sanWhiteList.recordNum()");
                 assert.equal(false,b5,"mismatched mintableToken.isStarted()");
                 assert.equal(100000,a6[0].toNumber(),"...");
                 assert.equal(1100000,a6[1].toNumber(),"...");
-                console.log("setup - OK");
+                //console.log("setup - OK");
             });
         }).then(tx => CrowdsaleMinter.deployed())
           .then(instance => (crowdsaleMinter=instance).configure(
@@ -261,6 +312,27 @@ contract('CrowdsaleMinter', function(accounts) {
               });
     });
 
+
+    let expected_total_presale_amount_with_bonus;
+    let calculatePresaleBonus = (presaleAddrs, presaleAmounts, presaleVotingAddrs, presaleVotes) => {
+        let votingMap = new Map();
+        presaleVotingAddrs.forEach( (e,i) => {
+            var vote = presaleVotes[i];
+            votingMap.set(e, vote);
+        });
+        let amount=0;
+        presaleAmounts.forEach((e,i)=>{
+            amount +=e;
+            let bonus = 0;
+            let vote = votingMap.get(presaleAddrs[i]);
+            if (!vote) bonus = e *0.54;
+            else if (vote>10) {
+                bonus = e * 0.54 * vote / 1000;
+            }
+            amount += bonus;
+        })
+        return amount;
+    }
 
     //============= Library =================
 

@@ -166,7 +166,7 @@ contract CrowdsaleMinter is Owned {
     uint private /* constant */ MIN_TOTAL_AMOUNT_TO_RECEIVE = MIN_TOTAL_AMOUNT_TO_RECEIVE_ETH * 1 ether;
     uint private /* constant */ MAX_TOTAL_AMOUNT_TO_RECEIVE = MAX_TOTAL_AMOUNT_TO_RECEIVE_ETH * 1 ether;
     uint private constant MIN_ACCEPTED_AMOUNT = MIN_ACCEPTED_AMOUNT_FINNEY * 1 finney;
-    bool private allBonusesAreMinted = false;
+    bool public allBonusesAreMinted = false;
 
     //
     // ======= interface methods =======
@@ -228,6 +228,8 @@ contract CrowdsaleMinter is Owned {
 
     event TokenStarted(address tokenAddr);
 
+    uint public total_presale_amount_with_bonus;
+
     //there are around 40 addresses in PRESALE_ADDRESSES list. Everything fits into single Tx.
     function mintAllBonuses() external
     inState(State.BONUS_MINTING)
@@ -239,7 +241,7 @@ contract CrowdsaleMinter is Owned {
 
         uint TEAM_AND_PARTNERS_PER_CENT = TEAM_BONUS_PER_CENT + ADVISORS_AND_PARTNERS_PER_CENT;
 
-        uint total_presale_amount_with_bonus = mintPresaleBonuses();
+        total_presale_amount_with_bonus = mintPresaleBonuses();
         uint total_collected_amount = total_received_amount + total_presale_amount_with_bonus;
         uint extra_amount = total_collected_amount * TEAM_AND_PARTNERS_PER_CENT / (100 - TEAM_AND_PARTNERS_PER_CENT);
         uint extra_team_amount = extra_amount * TEAM_BONUS_PER_CENT / TEAM_AND_PARTNERS_PER_CENT;
@@ -276,7 +278,6 @@ contract CrowdsaleMinter is Owned {
                 if (rawVote == 0)              rawVote = 1 ether; //special case "no vote" (default value) ==> (1 ether is 100%)
                 else if (rawVote <= 10 finney) rawVote = 0;       //special case "0%" (no bonus)           ==> (0 ether is   0%)
                 else if (rawVote > 1 ether)    rawVote = 1 ether; //max bonus is 100% (should not occur)
-
                 var presale_bonus = presale_balance * PRE_SALE_BONUS_PER_CENT * rawVote / 1 ether / 100;
                 var amount_with_bonus = presale_balance + presale_bonus;
                 _mint(amount_with_bonus, addr);
