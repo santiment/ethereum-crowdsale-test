@@ -22,24 +22,24 @@ pragma solidity ^0.4.11;
 import "./Base.sol";
 
 contract BalanceStorage {
-    function balances(address account) public returns(uint balance);
+    function balances(address account) public constant returns(uint balance);
 }
 
 contract AddressList {
-    function contains(address addr) public returns (bool);
+    function contains(address addr) public constant returns (bool);
 }
 
 contract MinMaxWhiteList {
-    function allowed(address addr) public returns (uint /*finney*/, uint /*finney*/ );
+    function allowed(address addr) public constant returns (uint /*finney*/, uint /*finney*/ );
 }
 
 contract PresaleBonusVoting {
-    function rawVotes(address addr) public returns (uint rawVote);
+    function rawVotes(address addr) public constant returns (uint rawVote);
 }
 
 contract CrowdsaleMinter is Owned {
 
-    string public constant VERSION = "0.2.0";
+    string public constant VERSION = "0.2.1";
 
     /* ====== configuration START ====== */
     uint public /* constant */ COMMUNITY_SALE_START = 0; /* approx. 30.07.2017 00:00 */
